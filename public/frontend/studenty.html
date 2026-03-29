@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Студенты</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div id="header-container"></div>
+
+  <header>
+    <h1>Студенты</h1>
+    <div class="filters">
+      <select id="groupFilter">
+        <option value="">Все группы</option>
+      </select>
+      <input type="text" id="searchInput" placeholder="Поиск по ФИО...">
+    </div>
+  </header>
+
+  <main>
+    <div class="students-list" id="studentsList"></div>
+    
+    <!-- Модалка для просмотра мероприятий студента -->
+    <div id="studentEventsModal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="studentModalTitle">Участие в мероприятиях</h2>
+          <span class="close-btn" onclick="closeStudentModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+          <table class="events-table">
+            <thead>
+              <tr>
+                <th>Мероприятие</th>
+                <th>Дата</th>
+                <th>Место</th>
+                <th>Сертификат</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody id="studentEventsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модалка для редактирования участия -->
+    <div id="editParticipationModal" class="modal hidden">
+      <div class="modal-content small">
+        <div class="modal-header">
+          <h3>Редактировать участие</h3>
+          <span class="close-btn" onclick="closeEditModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div class="form-grid">
+            <label for="editPlace">Место:</label>
+            <input type="text" id="editPlace">
+            
+            <label for="editCertificate">Новый сертификат (PDF/JPG/PNG):</label>
+            <input type="file" id="editCertificate" accept=".pdf,.png,.jpg,.jpeg">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button onclick="closeEditModal()">Отмена</button>
+          <button onclick="saveParticipationChanges()">Сохранить</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/header.js"></script>
+  <script src="/js/studenty.js"></script>
+</body>
+</html>

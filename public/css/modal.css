@@ -1,0 +1,98 @@
+/* Общая модалка */
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+.hidden {
+  display: none;
+}
+.modal-content {
+  background: #fff;
+  width: 800px;
+  max-width: 90%;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+}
+.modal-header, .modal-footer {
+  padding: 15px 20px;
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-footer {
+  border-top: 1px solid #ccc;
+  border-bottom: none;
+}
+.modal-body {
+  flex-grow: 1;
+  padding: 20px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+.close-btn {
+  font-size: 28px;
+  cursor: pointer;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+.form-grid input[type="text"],
+.form-grid input[type="date"],
+.form-grid input[type="file"] {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+  background: #f9f9f9;
+}
+.tab {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.tab.active {
+  background: #e0e0e0;
+  font-weight: bold;
+}
+.tab-content {
+  margin-top: 20px;
+}
+.students-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.add-student-btn {
+  padding: 5px 10px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.students-table {
+  border: 1px solid #ccc;
+  margin-top: 10px;
+  padding: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Админ-панель</title>
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <main>
+        <h1>Админ-панель</h1>
+
+        <!-- === МЕРОПРИЯТИЯ === -->
+<section id="events-section">
+    <h2>Мероприятия</h2>
+    <button id="addEventBtn">Добавить мероприятие</button>
+
+    <div class="filters">
+        <input type="text" id="filterTitle" placeholder="Название мероприятия">
+
+        <select id="filterType">
+            <option value="">Все типы</option>
+            <option value="Конкурс">Конкурс</option>
+            <option value="Круглый стол">Круглый стол</option>
+            <option value="Олимпиада">Олимпиада</option>
+            <option value="Мероприятие">Мероприятие</option>
+            <option value="Конференция">Конференция</option>
+            <option value="Семинар">Семинар</option>
+        </select>
+
+        <select id="filterLevel">
+            <option value="">Все уровни</option>
+            <option value="Международный">Международный</option>
+            <option value="Федеральный">Федеральный</option>
+            <option value="Региональный" selected>Региональный</option>
+            <option value="Муниципальный">Муниципальный</option>
+            <option value="Внутришкольный">Внутришкольный</option>
+        </select>
+
+        <label>Дата от:</label>
+        <input type="date" id="dateFrom">
+
+        <label>Дата до:</label>
+        <input type="date" id="dateTo">
+
+        <button id="applyFiltersBtn">Применить</button>
+        <button id="resetFiltersBtn" type="button">Сбросить фильтры</button>
+        <button id="exportMultipleBtn" onclick="exportMultipleEvents()">Экспорт выбранных</button>
+    </div>
+
+    <div id="eventList" style="margin-top: 20px; max-height: 500px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;"></div>
+</section>
+
+            <!-- === ПРЕПОДАВАТЕЛИ === -->
+            <section id="teachers-section">
+            <h2>Преподаватели</h2>
+            <button onclick="openTeacherForm()">Добавить преподавателя</button>
+
+            <!-- Форма добавления/редактирования -->
+            <div id="teacher-form" style="display: none; margin-top: 10px;">
+                <input type="hidden" id="teacher-id">
+                <input type="text" id="teacher-fullname" placeholder="ФИО">
+                <input type="text" id="teacher-login" placeholder="Логин">
+                <input type="password" id="teacher-password" placeholder="Пароль">
+                <button onclick="saveTeacher()">Сохранить</button>
+                <button onclick="cancelTeacherForm()">Отмена</button>
+            </div>
+
+            <!-- Список преподавателей -->
+            <div id="teachers-list" style="max-height: 300px; overflow-y: auto; margin-top: 15px; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
+                <!-- Здесь будут карточки преподавателей -->
+            </div>
+            </section>
+
+
+            <!-- === СТУДЕНТЫ === -->
+            <section id="students-section">
+            <h2>Студенты</h2>
+            <h3>Добавить студента вручную</h3>
+            <form id="addStudentForm">
+            <label>ФИО студента:</label><br />
+            <input type="text" name="FullName" required /><br /><br />
+
+            <label>Выберите группу:</label><br />
+            <select name="GroupId" id="groupSelect" required>
+                <option value="">-- Выберите группу --</option>
+            </select><br /><br />
+            <button type="submit">Добавить</button>
+            </form>
+            <h3>Загрузка студентов через Excel</h3>
+            <form id="excelUploadForm" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".xlsx" required />
+            <button type="submit">Загрузить</button>
+            </form>
+            <div class="filters">
+                <input type="text" id="student-search" placeholder="Поиск по ФИО">
+                <select id="group-filter">
+                <option value="">Все группы</option>
+                <!-- сюда подгрузим группы -->
+                </select>
+            </div>
+            <div id="students-list" class="scrollable-list"></div>
+            </section>
+
+
+            <!-- === ГРУППЫ === -->
+            <section id="groups-section">
+            <h2>Группы</h2>
+            <button onclick="openGroupForm()">Добавить группу</button>
+            <div id="groups-list" style="max-height: 300px; overflow-y: auto;"></div>
+            </section>
+
+            <!-- Форма группы -->
+            <div id="group-form" style="display:none;">
+            <input type="text" id="group-name-input" placeholder="Название группы" />
+            <button onclick="saveGroup()">Сохранить</button>
+            <button onclick="closeGroupForm()">Отмена</button>
+            </div>
+
+    </main>
+
+
+ <!-- === МОДАЛКА: мероприятие === -->
+    <div id="eventModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3 id="modalTitle">Добавить мероприятие</h3>
+            <form id="eventForm" enctype="multipart/form-data">
+                <input type="hidden" id="eventId">
+
+                <label>Тема:</label>
+                <input type="text" id="eventTitle" required>
+
+                <label>Тип мероприятия:</label>
+                <select id="eventType" required>
+                    <option value="Конкурс">Конкурс</option>
+                    <option value="Круглый стол">Круглый стол</option>
+                    <option value="Олимпиада">Олимпиада</option>
+                    <option value="Мероприятие">Мероприятие</option>
+                    <option value="Конференция">Конференция</option>
+                    <option value="Семинар">Семинар</option>
+                </select>
+
+                <label>Дата:</label>
+                <input type="date" id="eventDate" required>
+
+                <label>Место:</label>
+                <input type="text" id="eventLocation" required>
+
+                <label>Уровень:</label>
+                <select id="eventLvl" required>
+                    <option value="Международный">Международный</option>
+                    <option value="Федеральный">Федеральный</option>
+                    <option value="Региональный" selected>Региональный</option>
+                    <option value="Муниципальный">Муниципальный</option>
+                    <option value="Внутришкольный">Внутришкольный</option>
+                </select>
+
+                <label>Ответственный преподаватель:</label>
+                <select id="eventOrganizer" required></select>
+
+                <label>Файл приказа (PDF/DOC):</label>
+                <input type="file" id="orderFile" accept=".pdf,.doc,.docx" />
+
+                <button type="submit">Сохранить</button>
+                <button type="button" onclick="closeModal()">Отмена</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Модалка участников -->
+<div id="participantsModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h3>Участники мероприятия</h3>
+    <button onclick="exportParticipants()">Экспорт в Excel</button>
+    <table>
+      <thead>
+        <tr>
+          <th>ФИО</th>
+          <th>Группа</th>
+          <th>Место</th>
+          <th>Преподаватель</th>
+          <th>Сертификат</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button onclick="closeParticipantsModal()">Закрыть</button>
+  </div>
+</div>
+
+    <div id="editStudentModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span id="closeEditModal" style="float:right; cursor:pointer;">&times;</span>
+    <h3>Редактировать студента</h3>
+    <form id="editStudentForm">
+      <input type="hidden" name="StudentId">
+      <label>ФИО:</label>
+      <input type="text" name="FullName" required>
+      <label>Группа:</label>
+      <select name="GroupId" id="editGroupSelect" required></select>
+      <br><br>
+      <button type="submit">Сохранить</button>
+    </form>
+  </div>
+</div>
+
+
+    <script src="/js/header.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html>
