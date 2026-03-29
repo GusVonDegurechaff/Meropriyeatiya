@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const resetFiltersBtn = document.getElementById("resetFiltersBtn");
 
   const userId = parseInt(localStorage.getItem("userId"));
-  const role = parseInt(localStorage.getItem("role")); // 1 — админ, 0 — препод
+  const role = localStorage.getItem("role"); // 1 — админ, 0 — препод
 
   let currentMode = "create";
   let currentEventId = null;
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const card = document.createElement("div");
       card.className = "event-card";
 
-      const canEdit = event.OrganizerId === userId || role === 1;
+      const canEdit = event.OrganizerId === userId || role === 'admin';
 
       card.innerHTML = `
         <h3>${event.Title || "Без названия"}</h3>

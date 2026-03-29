@@ -1004,6 +1004,72 @@ app.get('/api/reports/participants/multi-export', async (req, res) => {
   }
 });
 
+app.get('/api/reports/participants/multi-stats', async (req, res) => {
+  try {
+    const eventIdsStr = req.query.eventIds;
+    if (!eventIdsStr) return res.status(400).json({ error: "Не указаны ID мероприятий" });
+
+    const eventIds = eventIdsStr.split(',').map(id => parseInt(id)).filter(id => !isNaN(id));
+    if (eventIds.length === 0) return res.status(400).json({ error: "Не указаны ID мероприятий" });
+
+    const request = new sql.Request();
+    eventIds.forEach((id, i) => request.input(`eventId${i}`, sql.Int, id));
+
+    const paramsPlaceholders = eventIds.map((_, i) => `@eventId${i}`).join(',');
+
+    const result = await request.query(`
+      SELECT 
+        e.Title AS EventTitle,
+        s.StudentId,
+        s.FullName AS StudentName,
+        g.GroupName,
+        ep.Place,
+        u.FullName AS TeacherName,
+        c.FilePath AS CertificatePath
+      FROM EventParticipants ep
+      JOIN Events e ON ep.EventId = e.EventId
+      JOIN Students s ON ep.StudentId = s.StudentId
+      LEFT JOIN Groups g ON s.GroupId = g.GroupId
+      LEFT JOIN Users u ON ep.TeacherId = u.UserId
+      LEFT JOIN Certificates c ON c.EventId = ep.EventId AND c.StudentId = s.StudentId
+      WHERE ep.EventId IN (${paramsPlaceholders})
+    `);
+
+    // Расчёт статистики
+    const totalParticipations = result.recordset.length;
+    const uniqueStudents = new Set(result.recordset.map(r => r.StudentId)).size;
+    const certificatesIssued = result.recordset.filter(r => r.CertificatePath).length;
+    const uniqueOrganizers = new Set(result.recordset.map(r => r.TeacherName).filter(Boolean)).size;
+    const totalEvents = eventIds.length;
+    const avgParticipantsPerEvent = totalEvents > 0 ? parseFloat((totalParticipations / totalEvents).toFixed(1)) : 0;
+
+    // Топ-5 групп
+    const groupMap = new Map();
+    result.recordset.forEach(row => {
+      if (row.GroupName) {
+        groupMap.set(row.GroupName, (groupMap.get(row.GroupName) || 0) + 1);
+      }
+    });
+    const topGroups = Array.from(groupMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([groupName, count]) => ({ groupName, count }));
+
+    res.json({
+      totalEvents,
+      totalParticipations,
+      uniqueStudents,
+      certificatesIssued,
+      avgParticipantsPerEvent,
+      uniqueOrganizers,
+      topGroups
+    });
+  } catch (err) {
+    console.error('Ошибка статистики:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Запуск сервера
 app.listen(PORT, () => {
     console.log(`Сервер запущен на http://localhost:${PORT}`);

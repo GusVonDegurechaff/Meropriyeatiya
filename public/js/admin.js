@@ -592,5 +592,86 @@ document.addEventListener('DOMContentLoaded', loadGroups);
 
   // Загрузка при открытии страницы
   window.addEventListener('DOMContentLoaded', loadTeachers);
+
+// ====================== АВТОГЕНЕРАЦИЯ ЛОГИНА ПРЕПОДАВАТЕЛЯ ======================
+function generateTeacherLogin() {
+  const fullName = document.getElementById('teacher-fullname').value.trim();
+  if (!fullName) {
+    alert('Сначала введите ФИО преподавателя!');
+    return;
+  }
+  const parts = fullName.split(/\s+/).filter(Boolean);
+  let login = parts[0].toLowerCase();                    // фамилия
+  if (parts.length > 1) login += '.' + parts[1][0].toLowerCase();
+  if (parts.length > 2) login += parts[2][0].toLowerCase();
+  document.getElementById('teacher-login').value = login;
+}
+
+// ====================== СТАТИСТИКА ПО ВЫБРАННЫМ ======================
+async function calculateSelectedStats() {
+  const checkboxes = document.querySelectorAll('.event-checkbox:checked');
+  if (checkboxes.length === 0) return alert('Выберите хотя бы одно мероприятие');
+
+  const eventIds = Array.from(checkboxes).map(cb => cb.value).join(',');
+
+  try {
+    const res = await fetch(`/api/reports/participants/multi-stats?eventIds=${eventIds}`);
+    if (!res.ok) throw new Error('Ошибка сервера');
+    const stats = await res.json();
+
+    const content = document.getElementById('statsContent');
+    content.innerHTML = `
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px;">
+        <div style="background:#f0f0f0; padding:15px; border-radius:8px; text-align:center;">
+          <div style="font-size:2em; font-weight:bold;">${stats.totalEvents}</div>
+          <div>Мероприятий</div>
+        </div>
+        <div style="background:#f0f0f0; padding:15px; border-radius:8px; text-align:center;">
+          <div style="font-size:2em; font-weight:bold;">${stats.totalParticipations}</div>
+          <div>Участий всего</div>
+        </div>
+        <div style="background:#f0f0f0; padding:15px; border-radius:8px; text-align:center;">
+          <div style="font-size:2em; font-weight:bold;">${stats.uniqueStudents}</div>
+          <div>Уникальных студентов</div>
+        </div>
+        <div style="background:#f0f0f0; padding:15px; border-radius:8px; text-align:center;">
+          <div style="font-size:2em; font-weight:bold;">${stats.certificatesIssued}</div>
+          <div>Сертификатов</div>
+        </div>
+        <div style="background:#f0f0f0; padding:15px; border-radius:8px; text-align:center;">
+          <div style="font-size:2em; font-weight:bold;">${stats.avgParticipantsPerEvent}</div>
+          <div>Среднее на мероприятие</div>
+        </div>
+        <div style="background:#f0f0f0; padding:15px; border-radius:8px; text-align:center;">
+          <div style="font-size:2em; font-weight:bold;">${stats.uniqueOrganizers}</div>
+          <div>Руководителей</div>
+        </div>
+      </div>
+
+      <h4>Топ-5 групп по участиям</h4>
+      <table style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr style="background:#ddd;"><th style="padding:8px; text-align:left;">Группа</th><th style="padding:8px; text-align:right;">Участий</th></tr>
+        </thead>
+        <tbody>
+          ${stats.topGroups.map(g => `
+            <tr>
+              <td style="padding:8px; border-bottom:1px solid #ddd;">${g.groupName}</td>
+              <td style="padding:8px; text-align:right; border-bottom:1px solid #ddd;">${g.count}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    `;
+
+    document.getElementById('statsModal').style.display = 'block';
+  } catch (err) {
+    console.error(err);
+    alert('Не удалось посчитать статистику');
+  }
+}
+
+function closeStatsModal() {
+  document.getElementById('statsModal').style.display = 'none';
+}
 // ===== Первичная загрузка =====
 loadEvents();

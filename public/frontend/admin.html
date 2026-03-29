@@ -47,6 +47,7 @@
         <button id="applyFiltersBtn">Применить</button>
         <button id="resetFiltersBtn" type="button">Сбросить фильтры</button>
         <button id="exportMultipleBtn" onclick="exportMultipleEvents()">Экспорт выбранных</button>
+        <button id="calculateStatsBtn" onclick="calculateSelectedStats()">Статистика по выбранным</button>
     </div>
 
     <div id="eventList" style="margin-top: 20px; max-height: 500px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;"></div>
@@ -62,6 +63,7 @@
                 <input type="hidden" id="teacher-id">
                 <input type="text" id="teacher-fullname" placeholder="ФИО">
                 <input type="text" id="teacher-login" placeholder="Логин">
+                <button type="button" onclick="generateTeacherLogin()">Генерировать логин</button>
                 <input type="password" id="teacher-password" placeholder="Пароль">
                 <button onclick="saveTeacher()">Сохранить</button>
                 <button onclick="cancelTeacherForm()">Отмена</button>
@@ -206,6 +208,14 @@
   </div>
 </div>
 
+    <!-- Модалка статистики -->
+<div id="statsModal" class="modal" style="display:none;">
+  <div class="modal-content" style="max-width: 700px;">
+    <h3>📊 Статистика по выбранным мероприятиям</h3>
+    <div id="statsContent" style="margin: 20px 0;"></div>
+    <button onclick="closeStatsModal()">Закрыть</button>
+  </div>
+</div>
 
     <script src="/js/header.js"></script>
     <script src="/js/admin.js"></script>
