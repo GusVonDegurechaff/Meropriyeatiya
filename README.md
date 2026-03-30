@@ -15,7 +15,7 @@
 ### 1. Клонирование репозитория
 ```bash
 git clone https://github.com/GusVonDegurechaff/Meropriyeatiya
-cd vscodesite
+cd meropriyeatiya
 ```
 
 Если папки node_modules ещё нет — выполни следующую команду:
