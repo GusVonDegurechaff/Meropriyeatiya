@@ -14,7 +14,7 @@
 
 ### 1. Клонирование репозитория
 ```bash
-git clone <https://github.com/GusVonDegurechaff/Meropriyeatiya>
+git clone https://github.com/GusVonDegurechaff/Meropriyeatiya
 cd vscodesite
 ```
 
